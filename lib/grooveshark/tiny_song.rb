@@ -6,7 +6,7 @@ require 'uri'
 module Grooveshark
   class TinySong
 
-    VERSION  = '0.0.1'
+    VERSION  = '0.1.0'
     BASE_URL = 'http://tinysong.com/'
 
     # Class wrapper methods, which assume some defaults.
