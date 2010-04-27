@@ -11,21 +11,25 @@ module Grooveshark
 
     # Class wrapper methods, which assume some defaults.
     class << self
-      def first(search)
-        new(search).first
+      def first(query)
+        new(query).first
       end
 
-      def meta(search)
-        new(search).meta
+      def meta(query)
+        new(query).meta
+      end
+
+      def search(query, *args)
+        new(query).search(*args)
       end
     end # self
 
-    def initialize(search, opts = {})
-      @search = CGI.escape(search)
+    def initialize(query, opts = {})
+      @query  = CGI.escape(query)
       @format = (opts[:format] || opts['format']) || 'json'
     end
 
-    # Returns a URL string with the first match of +search+ or nil.
+    # Returns a URL string with the first match of +query+ or nil.
     #
     #   TinySong.first('Bad Brains')  # => "http://tinysong.com/2Z5Q"
     def first
@@ -53,11 +57,22 @@ module Grooveshark
       @response
     end
 
+    # Perform a search, returning +limit+ number of results (see #meta).
+    # Minimum is 1; maximum is 32; default is 5.
+    def search(limit = 5)
+      @method = '/s/'
+      @params = "&limit=#{limit}"
+      @response = JSON.parse(send_request)
+    end
+
     private
 
     # Returns the URI for the request method.
     def request
-      URI.join(BASE_URL, @method, @search, "?format=#{@format}")
+      # this is kinda hackish
+      url_parts = [@method, @query, "?format=#{@format}"]
+      url_parts << @params if @params
+      URI.join(BASE_URL, url_parts.join)
     end
 
     # Fetches and returns the HTTP response (see #request).
@@ -65,7 +80,7 @@ module Grooveshark
       Net::HTTP.get(request)
     end
 
-    # Remove any un-needed characters from +response_string+ (backslashes, quotes, etc.).
+    # Remove any un-needed characters from +string+ (backslashes, quotes, etc.).
     # This is needed until the TinySong API is fixed to return a plain string.
     def sanitize_string(string)
       string.gsub!(/["]/, '')
