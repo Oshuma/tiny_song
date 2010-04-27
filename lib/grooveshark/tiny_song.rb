@@ -4,6 +4,7 @@ require 'net/http'
 require 'uri'
 
 module Grooveshark
+  # TODO: Check for empty responses and return nil.
   class TinySong
 
     VERSION  = '0.1.0'
@@ -59,6 +60,8 @@ module Grooveshark
 
     # Perform a search, returning +limit+ number of results (see #meta).
     # Minimum is 1; maximum is 32; default is 5.
+    #
+    #   TinySong.search('Bad Brains', 10)
     def search(limit = 5)
       @method = '/s/'
       @params = "&limit=#{limit}"

@@ -1,0 +1,31 @@
+= TinySong Ruby Library
+
+{TinySong}[http://tinysong.com/] is a quick way to share songs through
+Facebook, Twitter, email or just about anywhere.  Think of it as a {TinyURL}[http://en.wikipedia.org/wiki/URL_shortening]
+for songs.  Powered by {Grooveshark}[http://grooveshark.com/].
+
+In a nutshell:
+
+  # Return a URL string with the first search result (like Google's "I'm Feeling Lucky" button).
+  TinySong.first('Bad Brains')  # => "http://tinysong.com/2Z5Q"
+
+  # Returns a hash of meta information about the first song found.
+  TinySong.meta('Bad Brains')
+  # => {
+    "Url" => "http://tinysong.com/2Z5Q",
+    "SongID" => 8417130,
+    "SongName" => "Banned in D.C.",
+    "ArtistID" => 3419,
+    "ArtistName" => "Bad Brains",
+    "AlbumID" => 255086,
+    "AlbumName" => "Bad Brains"
+  }
+
+  # Perform a search, returning an array of result hashes, in the same format as returned by TinySong.meta().
+  # Can pass an optional limit as the 2nd arg; default limit is 5, max is (currently) 32.
+  TinySong.search('Bad Brains', 3)
+  # => [
+    { "Url" => "http://tinysong.com/2Z5Q", ... },
+    { "Url" => "http://tinysong.com/gRqG", ... },
+    { "Url" => "http://tinysong.com/1vPh", ... }
+  ]
