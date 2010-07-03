@@ -1,13 +1,23 @@
-require 'cgi'
-require 'json'
-require 'net/http'
-require 'uri'
+dependencies = [
+  'cgi',
+  'json',
+  'net/http',
+  'uri',
+]
+
+# Hack to explicitly require rubygems.
+begin
+  dependencies.each { |lib| require lib }
+rescue LoadError
+  require 'rubygems'
+  dependencies.each { |lib| require lib }
+end
 
 module Grooveshark
   # TODO: Check for empty responses and return nil.
   class TinySong
 
-    VERSION  = '0.1.0'
+    VERSION  = '0.1.1'
     BASE_URL = 'http://tinysong.com/'
 
     # Class wrapper methods, which assume some defaults.
