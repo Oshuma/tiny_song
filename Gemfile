@@ -1,5 +1,7 @@
+source :rubygems
+
 gem 'json'
 
 group :test do
-  gem 'rspec', :require => 'spec'
+  gem 'rspec', '>= 2.6.0'
 end

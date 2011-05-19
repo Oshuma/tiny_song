@@ -1,11 +1,11 @@
-require 'spec/rake/spectask'
+require 'bundler'
+require 'rspec/core/rake_task'
 
 task :default => :spec
 
 desc 'Run the specs'
-Spec::Rake::SpecTask.new(:spec) do |t|
-  t.spec_opts = ['--color']
-  t.spec_files = FileList['spec/**/*_spec.rb']
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.rspec_opts = ['--color']
 end
 
 desc 'Start a console loaded with the library'
