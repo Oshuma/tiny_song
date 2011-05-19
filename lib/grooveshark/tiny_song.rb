@@ -1,57 +1,59 @@
-dependencies = [
-  'cgi',
-  'json',
-  'net/http',
-  'uri',
-]
-
-# Hack to explicitly require rubygems.
-begin
-  dependencies.each { |lib| require lib }
-rescue LoadError
-  require 'rubygems'
-  dependencies.each { |lib| require lib }
-end
+require 'cgi'
+require 'json'
+require 'net/http'
+require 'uri'
 
 module Grooveshark
   # TODO: Check for empty responses and return nil.
   class TinySong
+    VERSION  = '0.2.0'
 
-    VERSION  = '0.1.1'
+    # Base URL of the TinySong API.
     BASE_URL = 'http://tinysong.com/'
 
-    # Class wrapper methods, which assume some defaults.
+    # The requested search query.
+    attr_reader :query
+
     class << self
-      def first(query)
-        new(query).first
+      # Class wrapper method for TinySong#first.
+      def first(api_key, query)
+        new(api_key, query).first
       end
 
-      def meta(query)
-        new(query).meta
+      # Class wrapper method for TinySong#meta.
+      def meta(api_key, query)
+        new(api_key, query).meta
       end
 
-      def search(query, *args)
-        new(query).search(*args)
+      # Class wrapper method for TinySong#search.
+      def search(api_key, query, *args)
+        new(api_key, query).search(*args)
       end
     end # self
 
-    def initialize(query, opts = {})
-      @query  = CGI.escape(query)
-      @format = (opts[:format] || opts['format']) || 'json'
+    # Initialize a TinySong instance.
+    #
+    # [api_key] Get your TinySong API key here[http://tinysong.com/api].
+    # [query] The search query passed to TinySong.
+    def initialize(api_key, query, opts = {})
+      @api_key = api_key
+      @query   = CGI.escape(query)
+      @format  = (opts[:format] || opts['format']) || 'json'
     end
 
-    # Returns a URL string with the first match of +query+ or nil.
+    # Returns a URL string with the first match of the search query or nil.
     #
-    #   TinySong.first('Bad Brains')  # => "http://tinysong.com/2Z5Q"
+    #   TinySong.first(api_key, 'Bad Brains')
+    #   # => "http://tinysong.com/2Z5Q"
     def first
       @method = '/a/'
       @response = send_request
       sanitize_string(@response)
     end
 
-    # Returns a hash of meta information about the #first song found or nil.
+    # Returns a hash of meta information about the first song found or nil.
     #
-    #   TinySong.meta('Bad Brains')
+    #   TinySong.meta(api_key, 'Bad Brains')
     #   # => {
     #     "Url" => "http://tinysong.com/2Z5Q",
     #     "SongID" => 8417130,
@@ -68,10 +70,10 @@ module Grooveshark
       @response
     end
 
-    # Perform a search, returning +limit+ number of results (see #meta).
+    # Perform a search, returning +limit+ number of results.
     # Minimum is 1; maximum is 32; default is 5.
     #
-    #   TinySong.search('Bad Brains', 10)
+    #   TinySong.search(api_key, 'Bad Brains', 10)
     def search(limit = 5)
       @method = '/s/'
       @params = "&limit=#{limit}"
@@ -81,14 +83,14 @@ module Grooveshark
     private
 
     # Returns the URI for the request method.
+    # FIXME: Remove this URL param joining shit.
     def request
-      # this is kinda hackish
-      url_parts = [@method, @query, "?format=#{@format}"]
+      url_parts = [@method, @query, "?format=#{@format}", "&key=#{@api_key}"]
       url_parts << @params if @params
       URI.join(BASE_URL, url_parts.join)
     end
 
-    # Fetches and returns the HTTP response (see #request).
+    # Fetches and returns the HTTP response (see TinySong#request).
     def send_request
       Net::HTTP.get(request)
     end
