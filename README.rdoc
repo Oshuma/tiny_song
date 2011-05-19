@@ -18,6 +18,8 @@ You can request an API key here: {http://tinysong.com/api}[http://tinysong.com/a
 
 In a nutshell:
 
+  require 'grooveshark/tiny_song'
+
   # Required to use the service.
   api_key = 'YOUR_TINYSONG_API_KEY'
 
