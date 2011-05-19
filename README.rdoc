@@ -4,13 +4,27 @@
 Facebook, Twitter, email or just about anywhere.  Think of it as a {TinyURL}[http://en.wikipedia.org/wiki/URL_shortening]
 for songs.  Powered by {Grooveshark}[http://grooveshark.com/].
 
+There are three basic methods when dealing with the library:
+
+* Grooveshark::TinySong#first  - Returns a URL string for the first result (like Google's "I'm Feeling Lucky").
+* Grooveshark::TinySong#meta   - Returns a hash of meta information about the first song found.
+* Grooveshark::TinySong#search - Perform a search, returning an array of result hashes.
+
+All methods require an API key as the first argument.
+You can request an API key here: {http://tinysong.com/api}[http://tinysong.com/api].
+
+
+== Usage
+
 In a nutshell:
 
-  # Return a URL string with the first search result (like Google's "I'm Feeling Lucky" button).
-  TinySong.first('Bad Brains')  # => "http://tinysong.com/2Z5Q"
+  # Required to use the service.
+  api_key = 'YOUR_TINYSONG_API_KEY'
 
-  # Returns a hash of meta information about the first song found.
-  TinySong.meta('Bad Brains')
+  TinySong.first(api_key, 'Bad Brains')
+  # => "http://tinysong.com/2Z5Q"
+
+  TinySong.meta(api_key, 'Bad Brains')
   # => {
     "Url" => "http://tinysong.com/2Z5Q",
     "SongID" => 8417130,
@@ -21,9 +35,8 @@ In a nutshell:
     "AlbumName" => "Bad Brains"
   }
 
-  # Perform a search, returning an array of result hashes, in the same format as returned by TinySong.meta().
   # Can pass an optional limit as the 2nd arg; default limit is 5, max is (currently) 32.
-  TinySong.search('Bad Brains', 3)
+  TinySong.search(api_key, 'Bad Brains', 3)
   # => [
     { "Url" => "http://tinysong.com/2Z5Q", ... },
     { "Url" => "http://tinysong.com/gRqG", ... },
